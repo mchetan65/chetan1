@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Hand+Cursive:wght@400;700&display=swap');
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Edu NSW ACT Hand Cursive', cursive;
+            /* Custom cursor is hidden on touch devices by default, which is good for mobile */
+            cursor: none;
+            background-color: #111827; /* Tailwind's gray-900 */
+            color: #d1d5db; /* Tailwind's gray-300 */
+            overflow-x: hidden;
+        }
+
+        /* --- Animated Code Background --- */
+        .code-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -10;
+        }
+
+        /* Each character is now its own element */
+        .code-bg-char {
+            position: absolute;
+            font-size: 1rem;
+            font-weight: bold; /* Added bold font weight */
+            opacity: 0.1; /* Increased brightness for default state */
+            color: #a5f3fc; /* Brighter, cyan-like color */
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            will-change: transform, opacity;
+        }
+
+        /* --- Custom Hashtag Cursor --- */
+        #cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: #3b82f6;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+            z-index: 50;
+        }
+        
+        /* --- Welcome Page Styling --- */
+        #welcome-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            transition: opacity 1s ease-in-out;
+            background-color: transparent; /* Changed to transparent */
+            text-align: center;
+            padding: 1rem;
+            cursor: pointer; /* Added for better UX on desktop and event handling */
+        }
+        #welcome-page.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- Portfolio Content Styling --- */
+        #portfolio-content {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in-out;
+        }
+        #portfolio-content.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* --- Section Animation --- */
+        .page-section-container {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .page-section-container.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section-content {
+            background-color: #1f2937; /* Tailwind's gray-800 */
+        }
+        
+        /* --- General Styling --- */
+        h1, h2 {
+            color: #d1d5db;
+        }
+        a {
+            color: #60a5fa; /* Tailwind's blue-400 */
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #3b82f6; /* Tailwind's blue-500 */
+        }
+
+        /* --- Navbar Link Hover Underline --- */
+        header nav a {
+            position: relative;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+        
+        header nav a:hover {
+            color: #111827; /* Dark gray, almost black */
+            background-color: #a5f3fc; /* Light cyan to make text readable */
+        }
+
+        header nav a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #111827; /* Underline color matches text hover color */
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.3s ease-out;
+        }
+
+        header nav a:hover::after {
+            transform: scaleX(1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <!-- Custom Hashtag Cursor -->
+    <div id="cursor">#</div>
+
+    <!-- Animated Code Background -->
+    <div class="code-bg"></div>
+
+    <!-- Welcome Page -->
+    <div id="welcome-page" class="absolute inset-0 flex flex-col justify-center items-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-8">Welcome to My Portfolio</h1>
+        <p class="text-lg text-gray-300">Tap anywhere to enter</p>
+    </div>
+
+    <!-- Main Content Container -->
+    <div id="portfolio-content" class="min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8 relative z-10">
+
+        <!-- Header/Navbar -->
+        <header class="w-full max-w-4xl p-4 bg-gray-800/50 rounded-lg shadow-xl mb-12 sticky top-4 z-30">
+            <nav class="flex flex-col md:flex-row md:justify-between md:items-center text-lg font-bold text-center">
+                <div class="mb-4 md:mb-0">My Portfolio</div>
+                <div class="flex flex-wrap justify-center gap-x-4 gap-y-2">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#skills">Skills</a>
+                    <a href="#education">Education</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#contact-details">Contact</a>
+                    <a href="#enquiries">Enquiries</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Home/Hero Section -->
+        <section id="home" class="page-section-container w-full max-w-4xl mb-12 flex items-center justify-center text-center" style="min-height: 70vh;">
+            <div class="section-content rounded-xl p-6 md:p-8 shadow-2xl transition-all duration-300 hover:shadow-blue-500/30">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-4">Chetan Midde</h1>
+                <p class="text-xl md:text-2xl text-blue-300 mb-8">Creative Developer & Problem Solver</p>
+                <a href="#about" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-lg">
+                    Learn More
+                </a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="page-section-container w-full max-w-4xl mb-12">
+            <div class="section-content rounded-xl p-6 md:p-8 shadow-2xl transition-all duration-300 hover:shadow-blue-500/30">
+                <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+                    <div class="w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-blue-500/50 flex-shrink-0">
+                        <!-- Replaced with your uploaded picture, which is now styled to fit -->
+                        <img src="https://i.ibb.co/Rp1Knk7Y/Whats-App-Image-2025-08-21-at-14-01-29-1d695853.jpg" alt="Your Picture" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h2 class="text-3xl font-bold mb-2 text-white">About Me</h2>
+                        <p class="text-gray-400 leading-relaxed mb-4">
+                            Hello! I'm Chetan Midde, a passionate developer with a knack for creating unique and
+                            interactive experiences. My journey in tech has been driven by a curiosity
+                            to build things that solve problems and bring ideas to life. This portfolio
+                            is a showcase of my skills and projects, built with a focus on modern
+                            web standards and a bit of creative flair.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="page-section-container w-full max-w-4xl mb-12">
+            <div class="section-content rounded-xl p-6 md:p-8 shadow-2xl transition-all duration-300 hover:shadow-blue-500/30">
+                <h2 class="text-3xl font-bold mb-6 text-center text-white">Skills</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-400">Languages</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-400">
+                            <li>JavaScript</li>
+                            <li>Python</li>
+                            <li>C++</li>
+                            <li>Java</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-400">Frameworks</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-400">
+                            <li>React</li>
+                            <li>Node.js</li>
+                            <li>Django</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-400">Databases</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-400">
+                            <li>SQL</li>
+                            <li>MongoDB</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-400">Tools</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-400">
+                            <li>Git</li>
+                            <li>Docker</li>
+                            <li>VS Code</li>
+                            <li>Eclipse</li>
+                            <li>IntelliJ</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="page-section-container w-full max-w-4xl mb-12">
+            <div class="section-content rounded-xl p-6 md:p-8 shadow-2xl transition-all duration-300 hover:shadow-blue-500/30">
+                <h2 class="text-3xl font-bold mb-6 text-center text-white">Education</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><span class="text-gray-200 font-medium">Parul University of Engineering and Technology</span> - B.Tech Computer Science and Engineering and Technology, Vadodara, Gujarat (Expected Graduation 2027)</li>
+                    <li><span class="text-gray-200 font-medium">Sri Shridi Sai Collage</span> - 12th Intermediate, 2022-2023</li>
+                    <li><span class="text-gray-200 font-medium">Narayana Olympiad</span> - 10th Class, 2020-201</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Projects Section -->
+        <section id="projects" class="page-section-container w-full max-w-4xl mb-12">
+            <div class="section-content rounded-xl p-6 md:p-8 shadow-2xl transition-all duration-300 hover:shadow-blue-500/30">
+                <h2 class="text-3xl font-bold mb-6 text-center text-white">Projects</h2>
+                <div class="space-y-6">
+                    <!-- Placeholder Project 1 -->
+                    <div class="bg-gray-900/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-semibold text-blue-400 mb-2">Portfolio Website</h3>
+                        <p class="text-gray-400">
+                            An animated and interactive personal portfolio showcasing skills and projects. Built with HTML, CSS, and JavaScript.
+                        </p>
+                        <a href="https://4bie9sr957z64led637mec9s0czvz3j2sz9ufxk2akoazgw0lv-h794075209.scf.usercontent.goog/12bc9adb-932e-4d5b-a462-cf765d97f764" class="mt-4 inline-block text-blue-400 hover:text-blue-500 transition-colors">View Project</a>
+                    </div>
+                    <!-- Placeholder Project 2 -->
+                    <div class="bg-gray-900/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-semibold text-blue-400 mb-2">E-commerce Backend API</h3>
+                        <p class="text-gray-400">
+                            A RESTful API for an e-commerce platform, handling user authentication, product management, and order processing. Developed using Node.js and MongoDB.
+                        </p>
+                        <a href="#" class="mt-4 inline-block text-blue-400 hover:text-blue-500 transition-colors">View Project</a>
+                    </div>
+                    <!-- Placeholder Project 3 -->
+                    <div class="bg-gray-900/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-semibold text-blue-400 mb-2">Task Management App</h3>
+                        <p class="text-gray-400">
+                            A web-based task manager with drag-and-drop functionality and real-time updates. Built with React and a Firebase backend.
+                        </p>
+                        <a href="#" class="mt-4 inline-block text-blue-400 hover:text-blue-500 transition-colors">View Project</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Contact Details Section -->
+        <section id="contact-details" class="page-section-container w-full max-w-4xl mb-12">
+            <div class="section-content rounded-xl p-6 md:p-8 shadow-2xl transition-all duration-300 hover:shadow-blue-500/30">
+                <h2 class="text-3xl font-bold mb-6 text-center text-white">Contact Details</h2>
+                <div class="space-y-4 text-center">
+                    <p class="flex items-center justify-center space-x-2">
+                        <!-- Phone Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        <span>+91 7032688265</span>
+                    </p>
+                    <p class="flex items-center justify-center space-x-2">
+                        <!-- Email Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-6 5a2 2 0 01-2.22 0L3 8V6a2 2 0 012-2h14a2 2 0 012 2v2l-7.89 5.26a2 2 0 01-2.22 0L3 8z" />
+                        </svg>
+                        <span>chetanmidde1@gmail.com</span>
+                    </p>
+                </div>
+                <div class="mt-8 flex flex-col sm:flex-row justify-center items-center sm:space-x-8 space-y-4 sm:space-y-0">
+                    <a href="https://www.linkedin.com/in/chetan-midde-335189326/" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-xl hover:scale-110 transition-transform">
+                        <!-- LinkedIn SVG logo -->
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4.98 3.5c0 1.381-1.119 2.5-2.5 2.5s-2.5-1.119-2.5-2.5 1.119-2.5 2.5-2.5 2.5 1.119 2.5 2.5zM.455 8.16l-.004 14.84h4.981l.004-14.84h-4.981zM24 16.883c0-3.355-1.927-4.993-4.577-4.993-2.316 0-3.469 1.164-4.045 2.274h-.075c-.075-1.008-.075-2.417-.075-3.834h-4.978l.004 14.84h4.979l-.004-8.775c0-.466.075-.933.224-1.258.423-.934 1.399-1.895 3.033-1.895 2.126 0 2.972 1.543 2.972 3.844v8.084h4.978l-.004-8.834z"></path>
+                        </svg>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://github.com/mchetan65" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-xl hover:scale-110 transition-transform">
+                        <!-- GitHub SVG logo -->
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.409 2.862 8.125 6.848 9.458.5.092.682-.217.682-.483 0-.237-.008-.867-.013-1.7a6.002 6.002 0 01-1.821 1.436c-.538.358-1.229.623-2.228.623-.628 0-1.285-.152-1.742-.455-.456-.303-.804-.712-1.15-.992-.346-.28-.7-.451-.7-.451-.622-.507-.06-.867-.06-.867.76-.055 1.169.789 1.169.789.676 1.167 1.892.83 2.348.635.069-.496.264-.83.481-1.023-1.815-.205-3.718-.908-3.718-4.029 0-.89.319-1.62.846-2.195-.084-.206-.366-1.036.084-2.167 0 0 .688-.218 2.256.837.653-.18 1.353-.269 2.05-.272.696-.003 1.396.086 2.05.271 1.567-1.055 2.255-.-837 2.255-.837.452 1.131.17 1.961.087 2.167.527.575.846 1.306.846 2.195 0 3.128-1.905 3.824-3.725 4.022.25.214.475.642.475 1.294 0 .93-.008 1.68-.008 1.908 0 .267.18.57.688.484C21.139 20.141 24 16.425 24 12.017 24 6.484 19.523 2 14.022 2H12z"></path>
+                        </svg>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section for Enquiries -->
+        <section id="enquiries" class="page-section-container w-full max-w-4xl mb-12">
+            <div class="section-content rounded-xl p-6 md:p-8 shadow-2xl transition-all duration-300 hover:shadow-blue-500/30">
+                <h2 class="text-3xl font-bold mb-6 text-center text-white">Quick Enquiries</h2>
+                <form id="contact-form" action="https://formspree.io/f/mwpqgkbr" method="POST" class="space-y-4">
+                    <input type="text" name="name" placeholder="Your Name" class="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input type="email" name="email" placeholder="Your Email" class="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <textarea name="message" placeholder="Your Message" rows="5" class="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors duration-300">Send Message</button>
+                </form>
+                <div id="form-status" class="text-center text-lg mt-4"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cursor = document.getElementById('cursor');
+            const codeBg = document.querySelector('.code-bg');
+            const sections = document.querySelectorAll('.page-section-container');
+            const welcomePage = document.getElementById('welcome-page');
+            const portfolioContent = document.getElementById('portfolio-content');
+            
+            const specialChars = "{}[]()<>/?;:";
+            const charCount = 200;
+            const chars = [];
+            
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+
+            // Generate animated background characters
+            for (let i = 0; i < charCount; i++) {
+                const charElement = document.createElement('div');
+                charElement.className = 'code-bg-char';
+                charElement.textContent = specialChars[Math.floor(Math.random() * specialChars.length)];
+                codeBg.appendChild(charElement);
+
+                chars.push({
+                    element: charElement,
+                    x: Math.random() * window.innerWidth, // Start anywhere on the screen
+                    y: Math.random() * window.innerHeight,
+                    vx: (Math.random() - 0.5) * 1,
+                    vy: (Math.random() - 0.5) * 1
+                });
+            }
+            
+            // Disperse background characters on mouse/touch move
+            const disperseDistance = 150;
+
+            // This function updates the cursor position for both mouse and touch events
+            function updateCursorPosition(e) {
+                let x, y;
+                // Check for touch event
+                if (e.touches && e.touches.length > 0) {
+                    x = e.touches[0].clientX;
+                    y = e.touches[0].clientY;
+                } 
+                // Check for mouse event
+                else if (e.clientX !== undefined) {
+                    x = e.clientX;
+                    y = e.clientY;
+                } else {
+                    // Exit if no position data is available
+                    return;
+                }
+                mouseX = x;
+                mouseY = y;
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+            }
+
+            // Listen for mouse and touch events to move the cursor
+            document.body.addEventListener('mousemove', updateCursorPosition);
+            document.body.addEventListener('touchstart', updateCursorPosition, { passive: true });
+            document.body.addEventListener('touchmove', updateCursorPosition, { passive: true });
+
+
+            // Animation loop
+            function animate() {
+                chars.forEach(char => {
+                    const dx = char.x - mouseX;
+                    const dy = char.y - mouseY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    // If close to cursor, disperse and increase opacity
+                    if (distance < disperseDistance) {
+                        const angle = Math.atan2(dy, dx);
+                        const moveX = Math.cos(angle) * (disperseDistance - distance);
+                        const moveY = Math.sin(angle) * (disperseDistance - distance);
+                        char.element.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                        char.element.style.opacity = '0.3';
+                    } else {
+                        // Otherwise, apply constant motion
+                        char.x += char.vx;
+                        char.y += char.vy;
+                        
+                        // Wrap characters around the screen edges
+                        if (char.x > window.innerWidth) char.x = 0;
+                        if (char.x < 0) char.x = window.innerWidth;
+                        if (char.y > window.innerHeight) char.y = 0;
+                        if (char.y < 0) char.y = window.innerHeight;
+
+                        char.element.style.transform = `translate(${char.x}px, ${char.y}px)`;
+                        char.element.style.opacity = '0.1';
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Intersection Observer for section animations
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Portfolio Content Reveal Logic
+            function showPortfolio() {
+                if (welcomePage.classList.contains('fade-out')) return; // Prevent multiple triggers
+
+                welcomePage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomePage.style.display = 'none';
+                    portfolioContent.classList.add('show');
+                    // Start observing sections only after content is visible
+                    sections.forEach(section => {
+                        observer.observe(section);
+                    });
+                }, 1000); // Wait for the fade-out to complete
+            }
+
+            // Show portfolio on click or touch. Attaching to the welcome page is more reliable for iOS.
+            welcomePage.addEventListener('click', showPortfolio, { once: true });
+            welcomePage.addEventListener('touchstart', showPortfolio, { once: true });
+
+            // --- Form Submission Handler ---
+            const contactForm = document.getElementById('contact-form');
+            const formStatus = document.getElementById('form-status');
+
+            contactForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const form = event.target;
+                const data = new FormData(form);
+                const submitButton = form.querySelector('button');
+
+                submitButton.disabled = true;
+                submitButton.textContent = 'Sending...';
+                
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: data,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        formStatus.textContent = "Thank you! Your message has been sent successfully.";
+                        formStatus.className = 'text-center text-lg mt-4 text-green-400';
+                        form.reset();
+                    } else {
+                        const responseData = await response.json();
+                        if (Object.hasOwn(responseData, 'errors')) {
+                            formStatus.textContent = responseData["errors"].map(error => error["message"]).join(", ");
+                        } else {
+                            formStatus.textContent = "Oops! There was a problem submitting your form.";
+                        }
+                        formStatus.className = 'text-center text-lg mt-4 text-red-400';
+                    }
+                } catch (error) {
+                    formStatus.textContent = "Oops! There was a network error. Please try again.";
+                    formStatus.className = 'text-center text-lg mt-4 text-red-400';
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
